@@ -21,14 +21,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs, ref } from 'vue'
 import { LoginData } from '../type/login'
+import type { FormInstance } from 'element-plus'
 export default defineComponent({
   mounted() {
     console.log(this);
   },
   setup() {
     const data = reactive(new LoginData())
+
+    const ruleFormRef = ref<FormInstance>();
+
     const rules = {
       username: [
         { required: true, message: '请输入账号', trigger: 'blur' },
@@ -40,9 +44,15 @@ export default defineComponent({
       ],
     }
 
+    let submitForm = function (ruleFormRef){
+      console.log(ruleFormRef);
+    }
+
     return {
       ...toRefs(data),
-      rules
+      rules,
+      ruleFormRef,
+      submitForm
     }
   }
 })
