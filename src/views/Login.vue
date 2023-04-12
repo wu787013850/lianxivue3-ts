@@ -1,7 +1,7 @@
 
 <template>
   <div class="login-box">
-    <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="70px" class="demo-ruleForm" :size="formSize"
+    <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="70px" class="demo-ruleForm"
       status-icon>
       <h2 class="title">系统登陆</h2>
       <el-form-item label="账号" prop="username">
@@ -24,6 +24,8 @@
 import { defineComponent, reactive, toRefs, ref } from 'vue'
 import { LoginData } from '../type/login'
 import type { FormInstance } from 'element-plus'
+import { Login } from '../request/api'
+import { useRouter } from 'vue-router'
 export default defineComponent({
   mounted() {
     console.log(this);
@@ -43,16 +45,40 @@ export default defineComponent({
         { min: 3, max: 10, message: '长度为3-10位', trigger: 'blur' },
       ],
     }
+    //登录
+    const router = useRouter();
+    const submitForm = (formEl: FormInstance | undefined) => {
+      if(!formEl) return;
+      formEl.validate((valid) => {
+        if(valid){
+          console.log('submit!')
+          Login(data.ruleForm)
+          .then((res) => {
+            console.log(res);
+            localStorage.setItem('token',res.token);
+            router.push({
+              name: 'home'
+            })
+          })
+        }else{
+          console.log('error submit!');
+          return false;
+        }
+      })
+    }
 
-    let submitForm = function (ruleFormRef){
-      console.log(ruleFormRef);
+    //重置表单
+    const resetForm = (formEl: FormInstance | undefined) => {
+      if(!formEl) return;
+      formEl.resetFields();
     }
 
     return {
       ...toRefs(data),
       rules,
       ruleFormRef,
-      submitForm
+      submitForm,
+      resetForm
     }
   }
 })
