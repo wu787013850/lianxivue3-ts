@@ -29,13 +29,15 @@
 <script lang="ts">
 import { computed, defineComponent, reactive, toRefs } from 'vue'
 import { GetGoodsList } from '../request/api'
-import { InitData } from '../type/goods'
+import { InitData, ListInt } from '../type/goods'
 export default defineComponent({
   setup () {
     const data = reactive(new InitData())
+    let basegoods:ListInt[] = []
     GetGoodsList().then(res=>{
       console.log(res);
       data.goods = res.goods;
+      basegoods = res.goods;
     })
 
     const List = computed(()=>{
@@ -51,12 +53,36 @@ export default defineComponent({
       data.selectData.page = page;
     }
 
+    const onSubmit = ()=> {
+      console.log(data.selectData.title);
+      console.log(data.selectData.introduce);
+      let arr:ListInt[] = []
+      if(data.selectData.title || data.selectData.introduce){
+        if(data.selectData.title){
+          arr = data.goods.filter(item => {
+            return item.title.indexOf(data.selectData.title) !== -1;
+          })          
+        }
+        if(data.selectData.introduce){
+          arr = data.goods.filter(item => {
+            return item.introduce.indexOf(data.selectData.introduce) !== -1;
+          })          
+        }
+      }else{
+        arr = basegoods;
+      }
+      data.selectData.count = arr.length;
+      data.goods = arr;
+      data.selectData.page = 1;
+    }
+
     return {
       ...toRefs(data),
       List,
       pagesizelist,
       changeSize,
-      changePage
+      changePage,
+      onSubmit
     }
   }
 })
