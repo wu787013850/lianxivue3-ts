@@ -5,6 +5,7 @@ declare module "axios" {
     msg: string;
     // 这里追加你的参数
     token: string;
+    goods: []
   }
   export function create(config?: AxiosRequestConfig): AxiosInstance;
 }
